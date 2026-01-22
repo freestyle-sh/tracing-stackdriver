@@ -36,7 +36,9 @@ This configuration separates maintenance mode from other error conditions:
 
 ```
 examples/nginx/
-├── nginx.conf                  # Main NGINX configuration
+├── nginx.conf                  # Server block configuration (for inclusion)
+├── nginx-standalone.conf       # Complete standalone configuration (for testing)
+├── test-config.sh             # Test script to validate configuration
 ├── error-pages/
 │   ├── maintenance.html        # Scheduled maintenance page (503)
 │   ├── 502.html               # Bad Gateway error page
@@ -50,7 +52,9 @@ examples/nginx/
 
 ### Basic Setup
 
-1. Copy the `nginx.conf` to your NGINX configuration directory:
+**Option 1: Include in existing configuration (recommended)**
+
+1. Copy the `nginx.conf` snippet to your NGINX sites directory:
    ```bash
    sudo cp nginx.conf /etc/nginx/sites-available/your-site
    sudo ln -s /etc/nginx/sites-available/your-site /etc/nginx/sites-enabled/
@@ -65,6 +69,16 @@ examples/nginx/
    ```bash
    sudo nginx -t
    sudo systemctl reload nginx
+   ```
+
+**Option 2: Standalone configuration (for testing)**
+
+1. Use the `nginx-standalone.conf` for a complete configuration:
+   ```bash
+   sudo cp nginx-standalone.conf /etc/nginx/nginx.conf
+   sudo cp -r error-pages/* /var/www/html/
+   sudo nginx -t
+   sudo systemctl restart nginx
    ```
 
 ### Enabling Maintenance Mode
@@ -114,6 +128,22 @@ upstream backend {
 ```
 
 ## Testing
+
+### Automated Testing
+
+Run the provided test script to validate the configuration:
+
+```bash
+cd examples/nginx
+./test-config.sh
+```
+
+The test script validates:
+- NGINX configuration syntax
+- Presence of all error page files
+- HTML structure of error pages
+- Key configuration features
+- Uniqueness of error page content
 
 ### Test Maintenance Mode
 
